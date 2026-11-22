@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vitrina de Cámaras Fotográficas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0c;
+  --paper:#161618;
+  --ink:#e8e6e3;
+  --chrome:#cfd3d6;
+  --red:#c8102e;
+  --amber:#d4a017;
+  --mut:#9a9590;
+  --line:#2a2a2c;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at top, rgba(200,16,46,.12), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:'Source Sans 3',system-ui,sans-serif;
+}
+header{
+  background:linear-gradient(180deg,#141416 0%,#0b0b0c 100%);
+  color:var(--chrome);
+  padding:42px 20px 28px;
+  text-align:center;
+  border-bottom:4px solid var(--red);
+  position:relative;
+}
+header:after{
+  content:"";
+  position:absolute;left:0;right:0;bottom:4px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--chrome),transparent);
+}
+h1{
+  font-family:Oswald,sans-serif;
+  font-weight:600;
+  font-size:clamp(1.8em,5vw,2.7em);
+  margin:0;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#f3f1ee;
+  text-shadow:0 1px 0 #000,0 0 24px rgba(207,211,214,.25);
+}
+header p{margin:8px 0 0;color:var(--mut);font-style:italic}
+.stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.stat{
+  border:1px solid #3a3a3e;
+  padding:10px 18px;
+  border-radius:2px;
+  background:rgba(255,255,255,.04);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.stat b{display:block;font-family:Oswald,sans-serif;font-size:1.45em;color:var(--amber);letter-spacing:.04em}
+.stat span{font-size:.75em;text-transform:uppercase;letter-spacing:1.4px;color:var(--chrome)}
+.filters{
+  max-width:1200px;margin:20px auto;padding:16px;
+  background:var(--paper);border:1px solid var(--line);border-radius:4px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;
+}
+.filters label{font-size:.75em;text-transform:uppercase;letter-spacing:1px;color:var(--red);font-weight:700}
+select,input{
+  width:100%;padding:7px;border:1px solid #3a3a3e;background:#101012;
+  font-family:'Source Sans 3',sans-serif;border-radius:3px;color:var(--ink);
+}
+#count{max-width:1200px;margin:0 auto;padding:0 16px;color:var(--mut);font-style:italic}
+.grid{max-width:1200px;margin:10px auto 40px;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+.card{
+  background:var(--paper);
+  border-radius:2px;
+  box-shadow:0 0 0 1px #2c2c30,0 8px 22px rgba(0,0,0,.35);
+  border-top:4px solid var(--red);
+  cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s;
+  position:relative;
+}
+.card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px #4a4a50,0 12px 28px rgba(200,16,46,.18)}
+.card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#101012;display:block}
+.noimg{aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;background:#101012;color:var(--chrome);font-family:Oswald;font-size:3em}
+.cb{padding:12px 12px 40px}
+.cb .t{font-family:Oswald,sans-serif;font-weight:600;font-size:1.15em;line-height:1.2;letter-spacing:.03em}
+.cb .a{color:var(--mut);font-size:.9em;font-style:italic;margin:3px 0 8px}
+.tag{display:inline-block;font-size:.7em;padding:2px 7px;border-radius:10px;background:#2a1518;color:#f3c4c9;margin:0 3px 3px 0;letter-spacing:.04em}
+.tag.r{background:var(--red);color:#fff}
+.price{margin-top:8px;color:var(--amber);font-weight:700}
+.price small{display:block;font-weight:600;color:var(--chrome);font-size:.85em}
+.empty{grid-column:1/-1;text-align:center;padding:70px 20px;font-family:Oswald;font-size:1.6em;color:var(--amber)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.modal.on{display:flex}
+.box{background:var(--paper);max-width:900px;width:100%;max-height:92vh;overflow:auto;border-radius:4px;border-top:8px solid var(--red);padding:22px;position:relative}
+.box h2{font-family:Oswald,sans-serif;margin:0 0 4px;color:#f3f1ee;letter-spacing:.04em}
+.x{position:absolute;right:14px;top:8px;font-size:1.8em;cursor:pointer;color:var(--amber)}
+.ph{display:flex;gap:8px;overflow-x:auto;margin:12px 0}
+.ph img{height:280px;border-radius:2px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.92em}
+td{padding:6px;border-bottom:1px dotted #3a3a3e;vertical-align:top}
+td:first-child{color:var(--amber);font-weight:700;width:38%}
+.precios{margin-top:16px;border:1px solid var(--line);border-radius:4px;padding:12px 14px;background:#101012}
+.precios h3{font-family:Oswald,sans-serif;margin:0 0 8px;color:var(--red);letter-spacing:.06em;font-size:1.05em;text-transform:uppercase}
+.precios .sug{margin-top:8px;font-size:1.15em;color:var(--amber);font-weight:700}
+.resena{border-left:3px solid var(--red);padding-left:12px;margin:12px 0;color:var(--ink)}
+footer{text-align:center;padding:20px;color:var(--mut);font-size:.85em;border-top:1px solid var(--line)}
+#musica-credito{text-align:center;font-size:11px;opacity:.6;padding:8px 8px 70px}
+#musica-credito a{color:inherit}
+#bgm-btn{position:fixed;left:16px;bottom:16px;z-index:9999;width:44px;height:44px;border-radius:50%;border:2px solid var(--amber);background:#141416;color:var(--amber);font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);opacity:.9}
+#cv-btn{position:fixed;right:16px;bottom:88px;z-index:9998;width:52px;height:52px;border-radius:50%;border:2px solid var(--amber);background:#141416;color:var(--amber);font-size:24px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+#cv-btn b{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font:700 12px/20px sans-serif;min-width:20px;height:20px;border-radius:10px;padding:0 4px}
+#cv-btn.cv-f{animation:cvf .4s}
+@keyframes cvf{50%{transform:scale(1.25)}}
+#cv-pan{position:fixed;right:16px;bottom:150px;z-index:10000;width:min(360px,calc(100vw - 32px));max-height:65vh;overflow:auto;background:#141416;color:var(--chrome);border:2px solid var(--amber);border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.55);font:14px/1.35 'Source Sans 3',system-ui,sans-serif;display:none;padding:10px}
+#cv-pan.cv-o{display:block}
+#cv-pan .cv-h{font-weight:700;font-size:16px;display:flex;justify-content:space-between;margin-bottom:6px;color:var(--amber)}
+#cv-pan [data-a]{cursor:pointer;user-select:none}
+#cv-pan .cv-r{border-top:1px solid rgba(128,128,128,.35);padding:6px 0}
+#cv-pan .cv-n{font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#cv-pan .cv-c{display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap}
+#cv-pan .cv-c span[data-a]{display:inline-block;min-width:22px;text-align:center;border:1px solid var(--amber);border-radius:6px;color:var(--amber)}
+#cv-pan input{width:90px;background:transparent;color:inherit;border:1px solid rgba(128,128,128,.6);border-radius:6px;padding:2px 4px}
+#cv-pan small{opacity:.7}
+#cv-pan .cv-s{text-align:right;font-weight:600;color:var(--amber)}
+#cv-pan .cv-t{display:flex;justify-content:space-between;border-top:2px solid var(--amber);margin-top:6px;padding-top:6px;font-size:16px;color:var(--amber)}
+#cv-pan .cv-v{margin-top:8px;text-align:center;border:1px solid var(--amber);border-radius:8px;padding:4px;color:var(--amber)}
+#cv-pan .cv-e,#cv-pan .cv-note{opacity:.75;font-size:12px;margin-top:6px}
+.cv-add{position:absolute;right:6px;bottom:6px;z-index:5;background:#141416;color:var(--amber);border:1px solid var(--amber);border-radius:14px;padding:3px 9px;font:600 12px/1.3 'Source Sans 3',system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.cv-add:hover{filter:brightness(1.2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vitrina de Cámaras Fotográficas</h1>
+  <p>Colección de cámaras digitales y de rollo de David Eduardo · tasación según estado en Chile e internacional</p>
+  <div class="stats">
+    <div class="stat"><b>2</b><span>Fichas</span></div>
+    <div class="stat"><b>2</b><span>Unidades</span></div>
+    <div class="stat"><b>$16.000 – $32.000</b><span>Valor total Chile (CLP)</span></div>
+  </div>
+</header>
+<div class="filters">
+  <div><label>Buscar</label><input id="q" placeholder="Modelo, marca, tipo…"></div>
+  <div><label>Marca</label><select id="f_marca"></select></div>
+  <div><label>Tipo</label><select id="f_tipo"></select></div>
+  <div><label>Época / década</label><select id="f_ep"></select></div>
+  <div><label>Estado</label><select id="f_estado"></select></div>
+  <div><label>Precio mín. (CLP)</label><input id="pmin" type="number" min="0"></div>
+  <div><label>Precio máx. (CLP)</label><input id="pmax" type="number" min="0"></div>
+  <div><label>Ordenar</label>
+    <select id="ord">
+      <option value="d">Más caras primero</option>
+      <option value="a">Más baratas primero</option>
+      <option value="yo">Más antiguas</option>
+      <option value="yn">Más recientes</option>
+      <option value="t">Por nombre</option>
+    </select>
+  </div>
+</div>
+<div id="count"></div>
+<div class="grid" id="g"></div>
+<div class="modal" id="m"><div class="box" id="mb"></div></div>
+<footer>Valores referenciales: primero ventas realizadas en Chile, después anuncios en Chile (Mercado Libre, Yapo) y por último ventas internacionales (eBay). Precio según estado · US$1 = $992,48 CLP.</footer>
+<script>
+const D = [
+  {
+    "id": "CAM-001",
+    "tipo": "Digital compacta",
+    "marca": "Kodak",
+    "titulo": "Kodak EasyShare C433",
+    "modelo": "EasyShare C433",
+    "anio": "2006",
+    "epoca": "Años 2000",
+    "y": 2006,
+    "ep": "Años 2000",
+    "pais": "Estados Unidos (marca Eastman Kodak); fabricación típica de la línea EasyShare en Asia",
+    "color": "Plateado",
+    "lente": "Kodak AF 3× Optical Aspheric Lens, 36–108 mm equivalente",
+    "sensor": "CCD de 1/2,5 pulgadas, 4,0 MP (2304 × 1728)",
+    "zoom": "Óptico 3× · digital 5×",
+    "pantalla": "LCD híbrida a color de 1,8 pulgadas (85.000 píxeles); dato de fábrica (manual Kodak)",
+    "alimentacion": "2 pilas AA (alcalinas, litio o Ni-MH recargables) o batería CRV3 / Kodak KAA2HR",
+    "almacenamiento": "Tarjeta SD / MMC",
+    "video": "MOV, 640 × 480 a 13 fps o 320 × 240 a 20 fps",
+    "funciones": "Botones delete, menu, review y share (naranja); flash integrado; visor óptico; compatible con dock EasyShare",
+    "resena": "En 2006 las compactas digitales ya eran de uso cotidiano. La EasyShare C433 fue la apuesta de Kodak por la simplicidad: 4 megapíxeles alcanzaban para revelar en 10 × 15 cm, el zoom asférico 3× cubría de un angular moderado a un tele corto, y funcionaba con pilas AA, sin depender de un cargador propio. El botón Share y el dock EasyShare eran la firma de Kodak en esa época: podías revisar las fotos en la pantalla chica y mandarlas a imprimir o por correo casi sin computador. Compitió en el tramo accesible justo antes de la crisis de Kodak y del auge de las cámaras en los celulares. Hoy es una pieza de esa transición del rollo a lo digital en casa.",
+    "accesorios": "Sin caja, dock, cargador ni tarjeta (solo el cuerpo)",
+    "funciona": "Funcionamiento sin confirmar",
+    "estado": {
+      "escala": "Bueno",
+      "nota": 7,
+      "detalle": "Aspecto en buen estado; carcasa plateada completa, con desgaste leve de uso; funcionamiento sin confirmar"
+    },
+    "rareza": "Común (compacta de gran tirada)",
+    "stock": 1,
+    "dolar": "992,48 CLP por US$1 (22-11-2026); 1 GBP ≈ US$1,3086",
+    "fecha": "2026-11-22",
+    "precio_vendido": "Sin ventas realizadas verificables en Chile. Internacional: CameraWorth registra 14 ventas en eBay (jun–nov 2026), mediana £17 (≈ $22.079 CLP) y tramo central £14–£24 (≈ $18.183–$31.170). Ventas recientes: £10 con marca en la pantalla (≈ $12.988), £11 (≈ $14.286) y £15 probadas (≈ $19.481). CameraPriceGuide: funcionando US$20 (≈ $19.850); sin probar US$10 (≈ $9.925); cualquier estado US$12–29 (≈ $11.910–$28.782).",
+    "precio_anunciado": "Sin anuncios del C433 exacto en Chile (Mercado Libre Chile o Yapo). Anuncios de Kodak EasyShare parecidas, funcionando, en Yapo: C813 a $10.000 (Rancagua, actualizado el 16-05-2026); CX7300 de 2003 (3,2 MP) a $35.000 (La Florida); C653 de 2007 (6,1 MP, con extras) a $60.000 (La Florida). Son precios pedidos, no ventas cerradas, y no son este modelo.",
+    "precio_estimado": "$10.000 – $20.000",
+    "precio_sugerido_clp": "$14.000",
+    "pmin": 10000,
+    "pmax": 20000,
+    "p_sugerido": 14000,
+    "origen_estimacion": "Estimación. No hay ventas ni anuncios del C433 exacto en Chile. Se apoya en ventas internacionales de eBay (CameraWorth y CameraPriceGuide) y en anuncios chilenos de EasyShare parecidas. El rango queda entre el valor internacional sin probar (≈ $10.000) y la mediana de unidades funcionando (≈ $20.000–$22.000), porque el funcionamiento de esta pieza no está confirmado y el aspecto es bueno.",
+    "notas": "Dólar de trabajo: $992,48 CLP. Libra: ≈ US$1,3086 (22-11-2026), o sea ≈ $1.298,76 CLP por £1. Fuentes de ventas: https://www.cameraworth.com/k/kodak/easyshare-c433/ (mediana £17, 14 ventas, jun–nov 2026; consultado el 22-11-2026) y https://camerapriceguide.com/cameras/kodak-easyshare-c433 (funcionando US$20; sin probar US$10). Anuncios Chile: Yapo C813 $10.000 https://www.yapo.cl/electronica-audio-video-foto-camaras-y-foto/camara-kodak-easyshare-c813-vintage/26685873 ; Yapo CX7300 $35.000 y C653 $60.000 en https://www.yapo.cl/electronica-audio-video-foto-camaras-y-foto?q=keyword.camara+kodak . Especificaciones: manual Kodak EasyShare C433 (LCD de 1,8\", no 1,6\"; CCD 1/2,5\"; AA / CRV3 / KAA2HR; video MOV).",
+    "imgs": [
+      "img/CAM-001.jpg",
+      "img/CAM-001-2.jpg"
+    ]
+  },
+  {
+    "id": "CAM-002",
+    "tipo": "Rollo de 35 mm",
+    "marca": "Highs",
+    "titulo": "Highs HC35",
+    "modelo": "HC35",
+    "anio": "c. 1970–1971",
+    "epoca": "Años 70",
+    "y": 1970,
+    "ep": "Años 70",
+    "pais": "Japón (fabricación probable, familia Tougodo Meikai HC35); Highs es la marca o etiqueta comercial del ejemplar",
+    "color": "Cuerpo metálico plateado con revestimiento negro texturado",
+    "lente": "Highs Lens F=5 cm (50 mm), foco fijo",
+    "sensor": "Película de 35 mm (formato 135)",
+    "zoom": "Sin zoom (lente fija)",
+    "pantalla": "Visor óptico (no tiene pantalla)",
+    "alimentacion": "Mecánica; no usa pilas",
+    "almacenamiento": "Rollo de 35 mm",
+    "video": "No",
+    "funciones": "Visor, zapata para flash, botón disparador, palanca o rueda de avance, perilla de rebobinado; exposición por iconos de clima en el cañón del lente (tres pasos de luz)",
+    "resena": "La Highs HC35 es una cámara de visor sencilla y económica de rollo de 35 mm. Por su forma, el lente de 5 cm de foco fijo, los iconos de clima en el cañón y la placa superior de aluminio coincide con la familia japonesa Tougodo Meikai HC35, que también se vendió como Revue HC35 (Foto-Quelle, Alemania) y Fodor C-35 (Países Bajos), hacia 1970–1971. Highs aparece como marca o etiqueta comercial de este ejemplar, no como un fabricante distinto. Estas cámaras llevaron el formato 35 mm a un precio bajo, sin telémetro ni fotómetro real (algunas traían una celda de selenio falsa). No eran un instrumento preciso, pero sí una puerta de entrada al rollo de 35 mm a fines de los 60 y principios de los 70.",
+    "accesorios": "Sin caja, tapa, correa ni flash (solo el cuerpo)",
+    "funciona": "Funcionamiento sin confirmar",
+    "estado": {
+      "escala": "Regular",
+      "nota": 5,
+      "detalle": "Desgaste y suciedad leve propios de la edad; algo de oxidación o suciedad acumulada alrededor del disparador y de la perilla de rebobinado; revestimiento negro y placa superior completos; funcionamiento sin confirmar"
+    },
+    "rareza": "Poco común (marca Highs poco documentada; familia Meikai/Revue más conocida)",
+    "stock": 1,
+    "dolar": "992,48 CLP por US$1 (22-11-2026); 1 GBP ≈ US$1,3086",
+    "fecha": "2026-11-22",
+    "precio_vendido": "Sin ventas realizadas verificables en Chile. La única venta cerrada del modelo exacto que se encontró es un remate de sucesión en HiBid (Tamarac, Florida, 24-10-2026): Highs HC35 con Highs Lens F=5 cm, sin probar y como está, a US$4 de martillo (≈ $3.970 CLP); con prima del 20% el comprador pagó US$4,80 (≈ $4.764). Es un piso de subasta, no un precio de vitrina. CollectiBlend cita una venta antigua (2003) de la hermana Meikai HC 35 en US$31 ya ajustados, y un índice estimado de US$20–30, con poca evidencia y sin ventas actuales.",
+    "precio_anunciado": "Sin anuncios del Highs HC35 en Chile. En eBay Reino Unido hay un aviso (no una venta) de una Highs HC 35 «para piezas o no funciona» a £25 (≈ $32.469 CLP) más envío, de junio de 2026. En Yapo, cámaras análogas compactas parecidas (no este modelo): Kodak Star 835 AF con defectos a $7.000; Kita M-560 compacta funcionando a $18.000; compactas automáticas funcionando en general entre $15.000 y $40.000.",
+    "precio_estimado": "$6.000 – $12.000",
+    "precio_sugerido_clp": "$8.000",
+    "pmin": 6000,
+    "pmax": 12000,
+    "p_sugerido": 8000,
+    "origen_estimacion": "Estimación. No hay ventas ni anuncios de este modelo en Chile. La venta de subasta exacta a US$4 es un piso de remate de sucesión, demasiado bajo para una venta particular en Chile. El rango queda por encima de esa subasta y por debajo de los anuncios chilenos de compactas análogas funcionando ($18.000 y más), porque esta pieza tiene desgaste, algo de oxidación y el funcionamiento no está confirmado.",
+    "notas": "Identificación: el frente «HC35» y «HIGHS LENS F=5cm», la placa superior grabada «HIGHS», la zapata, el disparador y el revestimiento negro texturado coinciden con el lote vendido en HiBid el 24-10-2026 y con la familia Tougodo Meikai HC35 descrita en Camera-wiki (también Revue HC35, circa 1970–1971 según collection-appareils.fr, y Fodor C-35). No es una Halina/Haking de Hong Kong: el diseño apunta a Tougodo, Japón. Fuentes: https://southeast.hibid.com/lot/327167329/highs-hc35-35mm-viewfinder-camera-with-highs-5cm-l ; https://camera-wiki.org/wiki/Meikai_HC35 ; https://www.collection-appareils.fr/x/html/page_standard_eng.php?id_appareil=14592 ; https://collectiblend.com/Cameras/Tougodo/Meikai-HC-35.html (estimación, evidencia escasa). Anuncio eBay UK £25 (no vendido). Dólar de trabajo: $992,48 CLP.",
+    "imgs": [
+      "img/CAM-002.jpg",
+      "img/CAM-002-2.jpg"
+    ]
+  }
+];
+const $ = function(i){ return document.getElementById(i); };
+const e = function(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+};
+const est = function(p){
+  const s = p.estado;
+  return (typeof s === 'object' && s) ? (s.escala || '') : String(s || '').split(/[(·,-]/)[0].trim();
+};
+const F = {
+  f_marca: function(p){ return p.marca; },
+  f_tipo: function(p){ return p.tipo; },
+  f_ep: function(p){ return p.ep; },
+  f_estado: est
+};
+for (const id of Object.keys(F)){
+  const fn = F[id];
+  const v = [...new Set(D.map(fn).filter(Boolean))].sort();
+  $(id).innerHTML = '<option value="">Todos</option>' + v.map(function(x){ return '<option>' + e(x) + '</option>'; }).join('');
+  $(id).onchange = r;
+}
+['q','pmin','pmax','ord'].forEach(function(i){ $(i).oninput = r; });
+const fm = function(n){ return '$' + Number(n).toLocaleString('es-CL'); };
+const estTxt = function(p){
+  const s = p.estado;
+  if (typeof s === 'object' && s){
+    return (s.escala || '') + (s.nota ? ' · ' + s.nota + '/10' : '') + (s.detalle ? ' — ' + s.detalle : '');
+  }
+  return s || '';
+};
+function r(){
+  const q = $('q').value.toLowerCase();
+  const a = +$('pmin').value || 0;
+  const b = +$('pmax').value || 1e15;
+  let L = D.filter(function(p){
+    return Object.keys(F).every(function(id){ return !$(id).value || F[id](p) == $(id).value; })
+      && p.pmax >= a && p.pmin <= b
+      && (!q || JSON.stringify(p).toLowerCase().includes(q));
+  });
+  const o = $('ord').value;
+  L.sort(function(x, y){
+    if (o === 'a') return x.pmin - y.pmin;
+    if (o === 'yo') return (x.y || 9999) - (y.y || 9999);
+    if (o === 'yn') return y.y - x.y;
+    if (o === 't') return String(x.titulo).localeCompare(y.titulo, 'es');
+    return y.pmax - x.pmax || y.pmin - x.pmin;
+  });
+  $('count').textContent = D.length ? (L.length + ' de ' + D.length + ' piezas') : '';
+  if (!D.length){
+    $('g').innerHTML = '<div class="empty">Pronto nuevas piezas · la colección se está cargando</div>';
+    return;
+  }
+  if (!L.length){
+    $('g').innerHTML = '<div class="empty">Sin resultados para estos filtros</div>';
+    return;
+  }
+  $('g').innerHTML = L.map(function(p){
+    const img = p.imgs && p.imgs.length ? ('<img loading="lazy" src="' + p.imgs[0] + '" alt="' + e(p.titulo) + '">') : '<div class="noimg">📷</div>';
+    return '<div class="card" data-id="' + e(p.id) + '" data-price="' + (p.p_sugerido || Math.round((p.pmin + p.pmax) / 2)) + '" onclick="sh(\'' + p.id + '\')">' +
+      img +
+      '<div class="cb"><div class="t">' + e(p.titulo) + '</div>' +
+      '<div class="a">' + e(p.marca) + (p.anio ? ' · ' + e(p.anio) : '') + (p.tipo ? ' · ' + e(p.tipo) : '') + '</div>' +
+      '<span class="tag">' + e(p.tipo) + '</span>' +
+      (est(p) ? '<span class="tag">' + e(est(p)) + '</span>' : '') +
+      (p.epoca ? '<span class="tag r">' + e(p.epoca) + '</span>' : '') +
+      '<div class="price">' + e(p.precio_estimado) + ' CLP<small>Sugerido ' + e(p.precio_sugerido_clp) + '</small></div>' +
+      '</div></div>';
+  }).join('');
+}
+const LB = {
+  id: 'Código',
+  tipo: 'Tipo',
+  marca: 'Marca',
+  modelo: 'Modelo',
+  anio: 'Año',
+  epoca: 'Época / década',
+  pais: 'Origen',
+  color: 'Color',
+  lente: 'Lente',
+  sensor: 'Sensor / formato',
+  zoom: 'Zoom',
+  pantalla: 'Pantalla / visor',
+  alimentacion: 'Alimentación',
+  almacenamiento: 'Almacenamiento',
+  video: 'Video',
+  funciones: 'Funciones',
+  accesorios: 'Accesorios incluidos',
+  funciona: '¿Funciona?',
+  estado: 'Estado',
+  rareza: 'Rareza',
+  stock: 'Unidades',
+  dolar: 'Tipo de cambio usado',
+  fecha: 'Fecha de registro',
+  origen_estimacion: 'Origen de la tasación',
+  notas: 'Notas y fuentes'
+};
+function sh(id){
+  const p = D.find(function(x){ return x.id == id; });
+  const fotos = (p.imgs || []).map(function(i){
+    return '<a href="' + i + '" target="_blank" rel="noopener"><img src="' + i + '" alt=""></a>';
+  }).join('');
+  const filas = Object.keys(LB).filter(function(k){ return p[k] != null && p[k] !== ''; }).map(function(k){
+    return '<tr><td>' + LB[k] + '</td><td>' + e(k === 'estado' ? estTxt(p) : p[k]) + '</td></tr>';
+  }).join('');
+  $('mb').innerHTML =
+    '<span class="x" onclick="$(\'m\').classList.remove(\'on\')">×</span>' +
+    '<h2>' + e(p.titulo) + '</h2>' +
+    '<i>' + e(p.marca) + (p.anio ? ' · ' + e(p.anio) : '') + ' · ' + e(p.id) + '</i>' +
+    (p.resena ? '<p class="resena">' + e(p.resena) + '</p>' : '') +
+    '<div class="ph">' + fotos + '</div>' +
+    '<div class="precios"><h3>Precios en Chile (CLP)</h3>' +
+    '<table>' +
+    '<tr><td>Vendido</td><td>' + e(p.precio_vendido) + '</td></tr>' +
+    '<tr><td>Anunciado</td><td>' + e(p.precio_anunciado) + '</td></tr>' +
+    '<tr><td>Estimado (rango)</td><td>' + e(p.precio_estimado) + '</td></tr>' +
+    '</table>' +
+    '<div class="sug">Sugerido de venta en Chile: ' + e(p.precio_sugerido_clp) + '</div></div>' +
+    '<table>' + filas + '</table>';
+  $('m').classList.add('on');
+}
+$('m').onclick = function(ev){ if (ev.target.id === 'm') $('m').classList.remove('on'); };
+document.onkeydown = function(ev){ if (ev.key === 'Escape') $('m').classList.remove('on'); };
+r();
+</script>
+<div id="musica-credito">Música: "Lobby Time" de Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>), licencia <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div>
+<audio id="bgm" src="audio/musica.mp3" loop preload="auto"></audio>
+<button id="bgm-btn" aria-label="Música" title="Música">🔇</button>
+<script>
+(function(){
+  var a = document.getElementById('bgm');
+  var b = document.getElementById('bgm-btn');
+  var K = 'vitrina_camaras_musica_pausada';
+  a.volume = 0.35;
+  function ui(){ b.textContent = a.paused ? '🔇' : '🔊'; }
+  function go(){ return a.play().then(ui).catch(function(){ ui(); }); }
+  function first(ev){
+    if (ev && ev.target === b) return;
+    rm();
+    if (localStorage.getItem(K) !== '1' && a.paused) go();
+  }
+  function rm(){
+    ['click','touchstart','keydown'].forEach(function(t){ document.removeEventListener(t, first, true); });
+  }
+  b.addEventListener('click', function(){
+    rm();
+    if (a.paused){ localStorage.removeItem(K); go(); }
+    else { a.pause(); localStorage.setItem(K, '1'); ui(); }
+  });
+  a.addEventListener('play', ui);
+  a.addEventListener('pause', ui);
+  if (localStorage.getItem(K) !== '1'){
+    a.play().then(ui).catch(function(){
+      ['click','touchstart','keydown'].forEach(function(t){ document.addEventListener(t, first, true); });
+    });
+  }
+})();
+</script>
+<!-- calculadora-vitrina -->
+<script>
+(function(){
+  var C = {card: 'div.card', name: '.t', price: '.price', key: 'camaras'};
+  var K = 'calc_vitrina_' + C.key;
+  var S = [];
+  try { S = JSON.parse(localStorage.getItem(K)) || []; } catch (err) { S = []; }
+  function save(){ localStorage.setItem(K, JSON.stringify(S)); }
+  function fmt(n){ return '$' + Math.round(n).toLocaleString('es-CL'); }
+  function parse(t){
+    t = t || '';
+    var i = t.lastIndexOf('Chile');
+    if (i >= 0) t = t.slice(i);
+    var m = t.match(/\d[\d.]*(?:,\d+)?/g) || [];
+    var v = m.map(function(x){ return parseInt(x.replace(/,\d+$/, '').replace(/\./g, ''), 10); }).filter(function(x){ return !isNaN(x); }).slice(0, 2);
+    if (!v.length) return {p:0, r:false};
+    if (v.length === 2 && v[1] > v[0]) return {p: Math.round((v[0] + v[1]) / 2), r:true};
+    return {p:v[0], r:false};
+  }
+  function nm(c){
+    var el = c.querySelector(C.name);
+    return el ? el.textContent.trim() : '';
+  }
+  function deco(){
+    document.querySelectorAll(C.card).forEach(function(c){
+      if (c.querySelector('.cv-add')) return;
+      if (getComputedStyle(c).position === 'static') c.style.position = 'relative';
+      var b = document.createElement('span');
+      b.className = 'cv-add';
+      b.setAttribute('role', 'button');
+      b.tabIndex = 0;
+      b.textContent = '➕ Agregar';
+      c.appendChild(b);
+    });
+  }
+  function add(c){
+    var n = nm(c);
+    var dp = c.getAttribute('data-price');
+    var pr;
+    if (dp){ pr = {p: Math.max(0, +dp || 0), r:false}; }
+    else {
+      var pe = c.querySelector(C.price);
+      pr = parse(pe ? pe.textContent : '');
+    }
+    var id = c.getAttribute('data-id') || n;
+    var it = S.find(function(x){ return x.id == id; });
+    if (it) it.q++;
+    else S.push({id:id, n:n, p:pr.p, r:pr.r, q:1});
+    save();
+    draw();
+    flash();
+  }
+  var btn = document.createElement('button');
+  var pan = document.createElement('div');
+  btn.id = 'cv-btn';
+  btn.title = 'Calculadora';
+  pan.id = 'cv-pan';
+  function flash(){ btn.classList.remove('cv-f'); void btn.offsetWidth; btn.classList.add('cv-f'); }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+  }
+  function draw(){
+    var q = 0, t = 0;
+    S.forEach(function(x){ q += x.q; t += x.q * x.p; });
+    btn.innerHTML = '🧮' + (q ? '<b>' + q + '</b>' : '');
+    var lista = S.length
+      ? '<div class="cv-l">' + S.map(function(x, i){
+          return '<div class="cv-r"><div class="cv-n">' + esc(x.n) + '</div><div class="cv-c">$<input type="number" min="0" step="100" value="' + x.p + '" data-i="' + i + '" class="cv-p">' +
+            (x.r ? '<small title="Punto medio del rango de precio">≈ medio</small>' : '') +
+            ' <span data-a="m" data-i="' + i + '">−</span><b>' + x.q + '</b><span data-a="p" data-i="' + i + '">+</span><span data-a="d" data-i="' + i + '" title="Quitar">🗑</span></div><div class="cv-s">' + fmt(x.p * x.q) + '</div></div>';
+        }).join('') + '</div>'
+      : '<div class="cv-e">Toca “➕ Agregar” en una ficha para sumarla.</div>';
+    pan.innerHTML = '<div class="cv-h">🧮 Mi cuenta<span class="cv-x" data-a="close">✕</span></div>' + lista +
+      '<div class="cv-t"><span>' + q + ' ítem' + (q === 1 ? '' : 's') + '</span><b>' + fmt(t) + ' CLP</b></div>' +
+      (S.length ? '<div class="cv-v" data-a="clr">Vaciar</div>' : '') +
+      '<div class="cv-note">Precios de referencia: se usa el sugerido de venta en Chile. Puedes cambiar la cantidad o el precio.</div>';
+  }
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest && ev.target.closest('.cv-add');
+    if (a){ ev.preventDefault(); ev.stopPropagation(); add(a.closest(C.card)); }
+  }, true);
+  document.addEventListener('keydown', function(ev){
+    var a = ev.target.closest && ev.target.closest('.cv-add');
+    if (a && (ev.key === 'Enter' || ev.key === ' ')){ ev.preventDefault(); ev.stopPropagation(); add(a.closest(C.card)); }
+  }, true);
+  pan.addEventListener('click', function(ev){
+    var a = ev.target.getAttribute('data-a');
+    var i = +ev.target.getAttribute('data-i');
+    if (!a) return;
+    if (a === 'close') pan.classList.remove('cv-o');
+    if (a === 'p') S[i].q++;
+    if (a === 'm'){ S[i].q--; if (S[i].q < 1) S.splice(i, 1); }
+    if (a === 'd') S.splice(i, 1);
+    if (a === 'clr' && confirm('¿Vaciar la cuenta?')) S = [];
+    save();
+    draw();
+  });
+  pan.addEventListener('change', function(ev){
+    if (ev.target.classList.contains('cv-p')){
+      S[+ev.target.dataset.i].p = Math.max(0, +ev.target.value || 0);
+      S[+ev.target.dataset.i].r = false;
+      save();
+      draw();
+    }
+  });
+  btn.addEventListener('click', function(){ pan.classList.toggle('cv-o'); });
+  function init(){
+    document.body.appendChild(btn);
+    document.body.appendChild(pan);
+    draw();
+    deco();
+    new MutationObserver(function(){ clearTimeout(init.t); init.t = setTimeout(deco, 60); }).observe(document.body, {childList:true, subtree:true});
+  }
+  if (document.body) init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<!-- /calculadora-vitrina -->
+</body>
+</html>
