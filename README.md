@@ -10,7 +10,7 @@ Cada ficha incluye fotos, marca, modelo, tipo, año, época, especificaciones (l
 - Calculadora / carrito flotante para ir sumando piezas (cantidades, total en CLP, se guarda en el navegador).
 - Música de fondo: "Lobby Time" de Kevin MacLeod (incompetech.com), licencia CC BY 4.0.
 
-**Totales:** 2 fichas · 2 unidades · CAM-001 Kodak EasyShare C433 $10.000 – $20.000 (sugerido $14.000) · CAM-002 Highs HC35 $12.000 – $25.000 (sugerido $18.000; rango fijado por el dueño según el estado) · Valor total Chile: **$22.000 – $45.000**.
+**Totales:** 3 fichas · 3 unidades · CAM-001 Kodak EasyShare C433 $10.000 – $20.000 (sugerido $14.000) · CAM-002 Highs HC35 $12.000 – $25.000 (sugerido $18.000; rango fijado por el dueño según el estado) · CAM-003 Canon PowerShot SX230 HS $50.000 – $90.000 (sugerido $65.000) · Valor total Chile: **$72.000 – $135.000**.
 
 ## 🛒 Tienda web
 **[https://dacam32-del.github.io/vitrina-camaras/](https://dacam32-del.github.io/vitrina-camaras/)**
